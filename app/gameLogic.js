@@ -17,6 +17,8 @@ $(() => {
 
     const cells = Array.from(document.querySelectorAll('.cell'));
     const width = 10;
+    let nextRandom = 0;
+    let timerId = null;
 
     //define tetrominoes and their orientations
     const jTetromino = [
@@ -110,11 +112,13 @@ $(() => {
       const freeze = () => {
         if(currentTetromino.some(index => cells[currentPosition + index + width].classList.contains('taken'))) {
             currentTetromino.forEach(index => cells[currentPosition + index].classList.add('taken'));
-            randomIndex = Math.floor(Math.random() * tetrominoes.length);
+            randomIndex = nextRandom;
+            nextRandom = Math.floor(Math.random() * tetrominoes.length);
             tetrominoOrientation = 0;
             currentTetromino = tetrominoes[randomIndex][tetrominoOrientation];
             currentPosition = 4;
             draw();
+            displayNext();
         }
       };
 
@@ -125,7 +129,7 @@ $(() => {
         freeze();
       };
 
-      let timerId = setInterval(moveDown, 1000);
+      
 
       const moveLeft = () => {
         undraw();
@@ -169,6 +173,40 @@ $(() => {
         }
       });
 
+      const nextCells = document.querySelectorAll('.next-cell');
+      const nextWidth = 4;
+      let nextIndex = 0;
+
+      const nextTetrominoes = [
+        [nextWidth, nextWidth*2, nextWidth*2+1, nextWidth*2+2], //jTetromino
+        [nextWidth+2, nextWidth*2, nextWidth*2+1, nextWidth*2+2], //lTetromino
+        [nextWidth, nextWidth+1, nextWidth+2, nextWidth+3], //iTetromino
+        [0, 1, nextWidth, nextWidth+1], //oTetromino
+        [1, nextWidth, nextWidth+1, nextWidth+2], //tTetromino
+        [nextWidth+1, nextWidth+2, nextWidth*2, nextWidth*2+1], //sTetromino
+        [nextWidth, nextWidth+1, nextWidth*2+1, nextWidth*2+2], //zTetromino
+      ];
+
+      const displayNext = () => {
+        nextCells.forEach(cell => {
+          cell.classList.remove('tetromino')
+        });
+        nextTetrominoes[nextRandom].forEach(index => {
+          nextCells[nextIndex + index].classList.add('tetromino')
+        });
+      };
+
+      $('#start-button').on('click', () => {
+        if(timerId) {
+          clearInterval(timerId);
+          timerId = null;
+        } else {
+          draw();
+          timerId = setInterval(moveDown, 1000);
+          nextRandom = Math.floor(Math.random*tetrominoes.length);
+          displayNext();
+        }
+      })  
 
       
 });    

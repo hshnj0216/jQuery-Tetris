@@ -38,3 +38,9 @@
 div.floor{
    display: none; 
 }
+#start-button{
+    background-color: orange;
+    color: orangered;
+    font-size: 2em;
+    cursor: pointer;
+}
